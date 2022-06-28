@@ -24,8 +24,8 @@ If this project benefitted you in some way please consider supporting my efforts
     + [Mounting the Core Components](#mounting-the-core-components)
       - [Overall Layout and Mounting the PoE Splitter](#overall-layout-and-mounting-the-poe-splitter)
       - [Buck Converter](#buck-converter)
-      - [Raspberry Pi](#raspberry-pi)
-      - [Modem EVB](#modem-evb)
+      - [EA8300 PCB](#EA8300-pcb)
+      - [NGFF USB Adapter](#ngff-usb-adapter)
     + [Connections and Cabling](#connections-and-cabling)
       - [Power Cables](#power-cables)
       - [Voltage Validation](#voltage-validation)
@@ -228,27 +228,33 @@ Description of vent and fan install already covered in detail [here](https://git
 
 ### Mounting the Core Components
 #### Overall Layout and Mounting the PoE Splitter
-This part took some trial and error to figure out how to securely attach all the major components to the plastic mounting plate of the enclosure in such a tight space. The PoE splitter already had nice mounting holes and doesn't get that hot so I left it's cover on. Basically oriented things in a way so that cables could be routed under or around all components to keep them low and out of the way of the fan blades when the enclosure door is closed. I also checked to ensure that, when installed in the case, there would be no issues inserting or removing cables from their ports (didn't want anything too close to each other or the sides for this reason). I mounted the PoE splitter first by threading the smaller cable ties in through the mounting holes, all the way through the plastic mounting plate coming back up through the plate through an adjacent square before threading the zip tie into itself and closing the loop tightly to secure it in place. I did this on all 4 corners.
+Comoponents were mounted to the plastic mounting plate of the enclosure using a combination of smaller zip-ties and nylon standoffs/screws/nuts. I made greater use of the nylon standoffs this time to better secure each component leaving the zip-ties for things like the Lever-Nuts which have no mounting holes themselves. Overall, I oriented the components from coldest to hottest running for most efficient heat dissipation (PoE splitter and buck converter on the bottom, router PCB in the middle, and modem at the top). Wires and connectors were routed into natural channels between components and secured with zip-ties to reduce strain, eliminate pinch points, and leave sufficient access for fingers to access connectors, SIMs, etc. without snagging anything. The PoE splitter already had nice mounting holes and doesn't get that hot so I left it's cover on and used the shortest height standoffs to mount it. This still left some nice space underneath it to route power wiring. 
 
 #### Buck Converter
-Next came the buck converter (DC voltage step down regulator). Mounting this one was fun because there were no mounting holes and the underside of the mounting plate where I wanted to place this had a raised plastic edge so I had to adjust the placement down slightly to where there was a break in the plastic edge to get pulled down good and tight. Word of warning here to be extra careful and ensure the zip ties are away from the solid capacitors. Luckily these converters came in a two pack because on the first one I pulled too hard and the zip tie slipped and sheared one of the capacitors right off the board, lol. Needles to say there was lots of cursing involved as I cut it loose and installed the second one more carefully. Once this was secured, I used the provided DC barrel connector cable to connect the PoE splitter to the converter and secured the excess wire with a couple additional cable ties.
+This was secured to the top of the PoE splitter with layers of mounting tape to bridge the gap created by the legs and solder beads on the underside of its PCB. As insurance against any future adhesive failure, a zip-tie was used to secure it in the middle as well. This will not create a heat issue since it is right in front of the cold air intake fan and the PoE splitter heat dissipation vents are on its sides. Mounting it on top of the PoE splitter created more space to access the Ethernet ports on the router PCB and allowed me to rely less on zip-ties this time since, on the RPi build, I found it was easy to overtighten them and shear off capacitors from the buck converter which is a show-stopper :)
 
-#### Raspberry Pi
-The RPi was next to be mounted but width-wise where I needed to place it there was not enough room to place it without the port connectors butting up against the buck converter. So, I followed the motto of "If you can't scale out, scale up" and used some of the medium sized M3 nylon standoffs from the assorted M3 size kit making sure their screwed in position on the panel lined up with the mounting holes on the RPi PCB. I used the corresponding sized nylon nuts to secure the standoffs from the back side of the mounting panel. I did not bother with the power cabling yet as I needed to place the modem EVB in place first to get an idea of the best way to route all the power cables from there. As a final step for the RPi, I added heatsinks to the SoC and surrounding chips.
+#### EA8300 PCB
+This was the largest, widest component so it had to go as far up as it could in the enclosure yet leaving space for the modem to mount just over it as well. The Ethernet ports were oriented downward for easier routing of power to the DC connector and access to plug in Ethernet cables. Two out of the four factory screw holes in the PCB were inside the edges so nylon standoffs were used to secure it easily. The top two holes were not full holes since they were on the edge of the PCB and needed washers added to fully secure them.
 
-#### Modem EVB
-Mounting the modem EVB was an interesting challenge since it only had two holes drilled on one side of the PCB with power and data connectors on the other, far side with no other holes to be found. The nylon washers in the standoff kit saved the day. I was able to position 5 of the tallest standoffs strategically along the edge of the PCB where I then used two of the nylon washers with the shortest nylon screw to "sandwich" and grip the PCB in between the two washers at each standoff. The standoffs themselves were secured from the back of the mounting plate with nylon nuts (same as the RPi). This setup secured the EVB very well without any play at all. This 'pinching' washer setup on the standoffs was positioned in a way which provided the best support while leaving the SIM slots unobstructed. I was then able to securely install the modem and its heatsink.
+#### NGFF USB Adapter
+The USB adapter used for the modem in this build already had mounting holes so using the tall nylon standoffs to mount it was easy and raised it above the router PCB far enough to allow for easy SIM insertion/ejection. The adapter and modem were centered over the router PCB to allow room for fingers in the channel between the two router heatsinks.
 
 <table >
 	<tbody>
 		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/66296323492__27087534-AA27-4171-A950-CDAFE049E74A.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5384.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5395.jpg" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h42_16.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h34_42.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h26_25.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h50_41.png" width="200" height="200" /></td>
+		</tr>
+		<tr>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h33_36.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h31_07.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h31_51.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h34_09.png" width="200" height="200" /></td></td>
 		</tr>
 	</tbody>
 </table>
-
 
 ### Connections and Cabling
 #### Power Cables
