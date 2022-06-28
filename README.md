@@ -174,7 +174,7 @@ I've included affiliate links to items which are sold by The Wireless Haven as I
 Reasons for selection covered [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#quectel-rm502q-ae). 
 
 ### NGFF to USB 3.0 Adapter
-Instead of a 5G modem evaluation board (EVB) this build will use a simpler adapter board. The disadvantage here is no directly DC power supplementation unless you go with the Wireless Haven single SIM version linked in the parts list. On the flipside, this item can be sourced domestically for less cost and we can supplement power input with a USB Y-cable to cover the power demands of the modem.
+Instead of a 5G modem evaluation board (EVB) this build will use a simpler adapter board. The disadvantage here is no direct DC power supplementation unless you go with the Wireless Haven single SIM version linked in the parts list. On the flipside, this item can be sourced domestically for less cost and we can supplement power input with a USB Y-cable to cover the power demands of the modem.
 
 ### Linksys EA8300
 Already covered selection [reasons for this component](https://github.com/hazarjast/5g_linksys_build/blob/main/README.md#design-philosophy--guiding-principles).
