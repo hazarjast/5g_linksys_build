@@ -207,23 +207,21 @@ Switched to FPC antennas this time as they are first-party manufacturered by Que
 
 ## Hardware Build
 ### Vent, Fan, and Wire Gland Install
-Since this will be going outside in the Midwestern US it is going to get hot and humid during some seasons so, in order to control heat and humidity, we will be installing two vents on the front door of the enclosure. The bottom will be a cold air intake and the top will be a hot air exhaust (since hot air rises). I chose the IPV-1116 vents because they are completely covered on 3 out of 4 sides and have a grid with small holes for air to pass through. The hole size required for the vents is kind of odd at 3.46". Luckily this worked out to exactly 88mm and by searching for the metric meausrement I was able to source one online.
-
-The fans installed easily since they came with screws and the vents had the necessary screw holes already. When installing the fans it was important to check they were installed correctly so that the bottom fan drew air in and the top fan blew air out. Luckily the fans had clear labels on the edges which indicated the direction of airflow. Even though the vents have a pretty small grid for air ingress/egress, sometimes we get foggy/misty weather in the Summer and Fall so I wanted to hedge my bets against any droplets being pulled in by the fans by installing metal mesh PC fan filters on the inside of the vents between them and the fan. The wire gland install is not pictured here but it's just a simple 1/2" spade bit drilled into the bottom of the enclosure with some sanding of the resulting hole so the threads slid in easy; then just needed to tighten the locknut on from the inside.
+Description of vent and fan install already covered in detail [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#vent-fan-and-wire-gland-install). This time around I have added pictures of the Ethernet cable gland installed as well (drilled 1/2" hole and widened further with side of drill bit to taper the opening for a nice, tight install).
 
 <table >
 	<tbody>
 		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5377.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5378.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5379.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5380.jpg" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/IMG_5377.jpg" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h45_46.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h46_32.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h44_33.png" width="200" height="200" /></td>
 		</tr>
 		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5381.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5422.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5421.jpg" width="200" height="200" /></td>
-			<td align= "center"><a href="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5396.MOV">Fan Test Video</a></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h47_55.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h50_13.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h48_29.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_08h48_59.png" width="200" height="200" /></td></td>
 		</tr>
 	</tbody>
 </table>
