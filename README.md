@@ -275,7 +275,7 @@ The 4x FPC antennas were mounted equal distances apart in the top of the enclosu
 I decided to go with the latest stable OpenWRT (21.02.3) and ModemManager (1.16.6-1) for this build. All other rationale for the decision to go with OpenWRT and ModemManager as the platform combo is covered in my earlier RPi build info found [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#operating-system-selection).
 
 ### OpenWRT Install and Initial Configuration
-The starting point for this build was of course RTFM (reading the 'fine' manual). In this case OpenWRT already has a nice wiki page for the EA8300 router: https://openwrt.org/toh/linksys/ea8300 . I connected the Ethernet data connection from the injector to my workbench PC's NIC so that I could follow the flashing instructions provided. Once booted up, I logged in to the web interface and set the root password:
+The starting point for this build was of course RTFM (reading the 'fine' manual). In this case OpenWRT already has a nice wiki page for the EA8300 router: https://openwrt.org/toh/linksys/ea8300 . I connected the Ethernet data connection from the injector to my workbench PC's NIC so that I could follow the flashing instructions provided. Once booted up, I logged in to the web interface and set the root password to proceed from there. The following screenshots are from my RPi build and thus show the 21.02.1 UI. If I get some time I'll update them showing the newer 21.02.3 UI but essentially they are exactly the same outside of some minor visual design differences.
 
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_10h39_15.png" />
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_10h39_30.png" />
