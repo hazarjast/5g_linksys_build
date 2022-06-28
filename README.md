@@ -358,9 +358,9 @@ For this project we will need some scripts to achieve the goals we made at the o
 For daemonized scripts, we control them using the 'pservice' package. This is a very simple OpenWRT package which is a wrapper for shell scripts which should run as daemons. The reason to use this package to manage such scripts is that it saves us from having to create and maintain individual 'init.d' service defintions for each script. One downside is that 'pservice' does not handle child processes (descendants) which are launched from inside our script functions. Thus, our scripts must track any subshell processes created so that we can intercept signals on termination by 'pservice' (mostly 'SIGTERM') and end them prior to the main script ending so as not to leave orphan processes when stopping/starting/restarting 'pservice'. Final point to note is that 'pservice' start/stop controls all scripts together and not individually. If one wishes to control each script daemon individually then one would be encouraged to write proper service files for each one to be called by procd directly on boot.
 
 #### fancontrol.sh
-This script controls our case fans. On first run this script will add itself to 'pservice' config if not present already. Also, on first run it sets a hotplug rule for the USB hub so that when disconnected/reconnected it will keep the fans powered off unless otherwise controlled by the script. Further, it checks that the selected modem AT interface is unbound from ModemManager so we can use it. If this isn't the case, it creates the necessary 'udev' rule to unbind the interface and prompts the user to reboot for the change to take effect. The script runs as a daemon under 'pservice' and checks the modem SoC temperature once per minute. If the temperature is over the defined limit threshold (55c by default), it will power on the fans. Once the modem has cooled below the limit, the fans are deactivated. Fan activation/deactivation by this script is logged to the system log; the history can be viewed with 'logread -e FAN_CONTROL'. Before running this script the following variables should be entered appropriately:
+This script controls our case fans. On first run this script will add itself to 'pservice' config if not present already. Also, it checks that the selected modem AT interface is unbound from ModemManager so we can use it. If this isn't the case, it creates the necessary 'udev' rule to unbind the interface and prompts the user to reboot for the change to take effect. The script runs as a daemon under 'pservice' and checks the modem SoC temperature once per minute. If the temperature is over the defined limit threshold (55c by default), it will power on the fans. Once the modem has cooled below the limit, the fans are deactivated. Fan activation/deactivation by this script is logged to the system log; the history can be viewed with 'logread -e FAN_CONTROL'. Before running this script the following variables should be entered appropriately:
 
-**$HUB, $PRODID** - Obtain w/ 'lsusb' and 'lsusb -v' ('idVendor:idProduct'; 'idVendor/idProduct/bcdDevice'). For $PRODID, ignore leading zeros in idVendor/idProduct and separating decimal in bcdDevice. Ex. 'idVendor 0x05e3, idProduct 0x0608, bcdDevice 60.52' = "5e3/608/6052".
+**$HUB - Obtain w/ 'lsusb' ('idVendor:idProduct').
 
 **$PORTS** - Populate with hub port numbers of connected fans using appropriate uhubctl syntax. Ex. '2-3' (ports two through three), '1,4 (ports one and four), etc.
 
@@ -425,13 +425,13 @@ apt install build-essential ccache ecj fastjar file g++ gawk gettext git java-pr
 
 update-ca-certificates
 
-curl https://archive.openwrt.org/releases/21.02.1/targets/bcm27xx/bcm2711/openwrt-sdk-21.02.1-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64.tar.xz -o sdk.tar.xz
+curl https://archive.openwrt.org/releases/21.02.3/targets/ipq40xx/generic/openwrt-sdk-21.02.3-ipq40xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64.tar.xz -o sdk.tar.xz
 
 mkdir sdk
 
 tar -xf sdk.tar.xz -C ./sdk/
 
-cd sdk/openwrt-sdk-21.02.1-bcm27xx-bcm2711_gcc-8.4.0_musl.Linux-x86_64/package
+cd sdk/openwrt-sdk-21.02.3-ipq40xx-generic_gcc-8.4.0_musl_eabi.Linux-x86_64/package
 
 git clone https://github.com/4IceG/luci-app-sms-tool
 
@@ -454,14 +454,12 @@ Go to LuCI > Applications and select 'luci-app-sms-tool' by pressing 'm'. Exit a
 ```bash
 make package/luci-app-sms-tool/compile
 ```
-It will take some minutes to complete depending on CPU as it has to compile all dependencies along with the app source code. You can increase speed by adding the '-j[x]' switch where '[x]' is the number of CPUs the compile should be threaded across. With the default single CPU selection, it took 10-15 minutes to complete.The .ipk files for the resulting two apps, sms-tool and luci-app-sms-tool, will be located under '...bin/packages/aarch64_cortex-a72/base'. I used WinSCP to download them from my VPS and then upload them to the OpenWRT install. I've also placed a copy under https://github.com/hazarjast/5g_rpi4_build/tree/main/images for easy download if you would like to use them. Once copied over to OpenWRT they can be instaled with opkg as normal:
+It will take some minutes to complete depending on CPU as it has to compile all dependencies along with the app source code. You can increase speed by adding the '-j[x]' switch where '[x]' is the number of CPUs the compile should be threaded across. With the default single CPU selection, it took 10-15 minutes to complete.The .ipk files for the resulting two apps, sms-tool and luci-app-sms-tool, will be located under '...bin/packages/arm_cortex-a7_neon-vfpv4/base'. I used WinSCP to download them from my VPS and then upload them to the OpenWRT install. I've also placed a copy under https://github.com/hazarjast/5g_linksys_build/tree/main/images for easy download if you would like to use them. Once copied over to OpenWRT they can be instaled with opkg as normal:
 ```bash
-root@OpenWrt:~# okpg install luci-app-sms-tool_1.9.3-20220315_all.ipk
--ash: okpg: not found
 root@OpenWrt:~# opkg install luci-app-sms-tool_1.9.3-20220315_all.ipk
 Installing luci-app-sms-tool (1.9.3-20220315) to root...
 Installing luci-compat (git-22.046.85744-f08a0f6) to root...
-Downloading https://downloads.openwrt.org/releases/21.02.1/packages/aarch64_cortex-a72/luci/luci-compat_git-22.046.85744-f08a0f6_all.ipk
+Downloading https://downloads.openwrt.org/releases/21.02.3/packages/arm_cortex-a7_neon-vfpv4/luci/luci-compat_git-22.046.85744-f08a0f6_all.ipk
 Configuring luci-compat.
 Configuring luci-app-sms-tool.
 //usr/lib/opkg/info/luci-app-sms-tool.postinst: /etc/uci-defaults/start-smsled: line 5: /etc/init.d/smsled: Permission denied
