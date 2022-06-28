@@ -13,15 +13,13 @@
 # Specifically written for OpenWRT hosts with a modem managed by ModemManager.
 # Intended to be used with a USB hub which supports Per Port Power Switching (PPPS).
 # Modem should be in a 'usbnet' mode which provides an AT port:
-# ex. RM502Q-AE in QMI mode
+# ex. RM502Q-AE in QMI or MBIM mode
 # This script should exist under '/scripts/'.
 # Package 'pservice' should be installed and used to run this as a daemon.
-# At first run this script will add this script to 'pservice' config.
+# At first run this script will add itself to 'pservice' config.
 #
 # *Required Input*
-# $HUB, $PRODID - Obtain w/ 'lsusb' and 'lsusb -v' ('idVendor:idProduct'; 'idVendor/idProduct/bcdDevice')
-# For $PRODID, ignore leading zeros in idVendor/idProduct and separating decimal in bcdDevice
-# ex. 'idVendor 0x05e3, idProduct 0x0608, bcdDevice 60.52' = "5e3/608/6052"
+# $HUB - Obtain w/ 'lsusb' ('idVendor:idProduct')
 #
 # $PORTS - Populate with hub port numbers of connected fans using appropriate uhubctl syntax:
 # ex. '2-3' (ports two through three), '1,4 (ports one and four), etc.
@@ -40,9 +38,8 @@
 # Copyright 2022 hazarjast (and aliases) - hazarjast at protonmail dot com
 #
 
-HUB="05e3:0608"
-PRODID="5e3/608/6052"
-PORTS="3-4"
+HUB="2109:8110"
+PORTS="2-3"
 ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
@@ -67,36 +64,6 @@ case "$PFEXST" in
   "false") $(echo $$ > $PIDFILE) || $($ERROR "Could not create PID file. Exiting." && exit 1)
   ;;
 esac
-
-# Add a hotplug rule to keep fans from starting themselves
-# uhubctl power off sometimes causes hub to drop/reconect from kernel
-# This hotplug rule ensures fans are stopped in this scenario
-if [ ! -f "/etc/hotplug.d/usb/20-uhubctl-usb" ]
-then
-cat << EOF >> /etc/hotplug.d/usb/20-uhubctl-usb
-#!/bin/sh
-
-# If D-Link USB hub disconnects and comes back, stop the connected fans
-
-PRODID="$PRODID"
-HUB="$HUB"
-PORTS="$PORTS"
-FANON=/var/run/fan.on
-BINARY="/usr/sbin/uhubctl -n \$HUB -p \$PORTS -a off"
-INFO="/usr/bin/logger -t hotplug"
-
-if [ "\${PRODUCT}" = "\${PRODID}" ]; then
-    if [ "\${ACTION}" = "add" ]; then
-        \${BINARY} && rm -f \$FANON
-        \$INFO "USB hub unexpectedly detached; powered off fan ports."
-    fi
-fi
-EOF
-
-  $INFO "Set hotplug rule for USB hub '$HUB'."
-else
-  continue
-fi
 
 # Unbind ModemManager from an AT port so we can use it
 # Without this 'socat' commands can hang or return no value
