@@ -10,7 +10,7 @@
 # Script to be used for a single ModemManager modem defined as $LIFACE in uci.
 # This script should exist under '/scripts/'.
 # Package 'pservice' should be installed and used to run this as a daemon.
-# At first run this script will add this script to 'pservice' config.
+# At first run this script will add itself to 'pservice' config.
 #
 # *Required Inputs*
 # $PINGDST, $LIFACE - Domains to ping, logical (uci) name of the modem interface.
