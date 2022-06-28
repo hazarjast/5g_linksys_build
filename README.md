@@ -273,7 +273,7 @@ The 4x FPC antennas were mounted equal distances apart in the top of the enclosu
 		</tr>
 		<tr>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_29.png" width="200" height="200" /></td>
-			<td><img src=https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_02.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_02.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h40_25.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h24_33.png" width="200" height="200" /></td></td>
 		</tr>
