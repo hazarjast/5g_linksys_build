@@ -21,16 +21,15 @@ If this project benefitted you in some way please consider supporting my efforts
     + [FPC Antennas](#fpc-antennas)
   * [Hardware Build](#hardware-build)
     + [Vent, Fan, and Wire Gland Install](#vent-fan-and-wire-gland-install)
-    + [Mounting the Core Components](#mounting-the-core-components)
-      - [Overall Layout and Mounting the PoE Splitter](#overall-layout-and-mounting-the-poe-splitter)
-      - [Buck Converter](#buck-converter)
+    + [Mounting, Connections, and Cabling](#mounting-connections-and-cabling)
+      - [Buck Converter and PoE Splitter](#buck-converter-and-poe-splitter)
+      - [Layout and Cable Routing](#layout-and-cable-routing)
       - [EA8300 PCB](#EA8300-pcb)
       - [NGFF USB Adapter](#ngff-usb-adapter)
-    + [Connections and Cabling](#connections-and-cabling)
       - [Power Cables](#power-cables)
       - [Voltage Validation](#voltage-validation)
       - [USB and Ethernet Connections](#usb-and-ethernet-connections)
-      - [PCB Antennas](#pcb-antennas-1)
+      - [FPC Antennas](#fpc-antennas)
   * [Software Build](#software-build)
     + [Operating System Selection](#operating-system-selection)
     + [OpenWRT Pre-installation Prep](#openwrt-pre-installation-prep)
@@ -226,26 +225,39 @@ Description of vent and fan install already covered in detail [here](https://git
 	</tbody>
 </table>
 
-### Mounting the Core Components
-#### Overall Layout and Mounting the PoE Splitter
-Comoponents were mounted to the plastic mounting plate of the enclosure using a combination of smaller zip-ties and nylon standoffs/screws/nuts. I made greater use of the nylon standoffs this time to better secure each component leaving the zip-ties for things like the Lever-Nuts which have no mounting holes themselves. Overall, I oriented the components from coldest to hottest running for most efficient heat dissipation (PoE splitter and buck converter on the bottom, router PCB in the middle, and modem at the top). Wires and connectors were routed into natural channels between components and secured with zip-ties to reduce strain, eliminate pinch points, and leave sufficient access for fingers to access connectors, SIMs, etc. without snagging anything. The PoE splitter already had nice mounting holes and doesn't get that hot so I left it's cover on and used the shortest height standoffs to mount it. This still left some nice space underneath it to route power wiring. 
+### Mounting, Connections, and Cabling
+#### Buck Converter and PoE Splitter
+The buck converter was secured to the top of the PoE splitter with layers of mounting tape to bridge the gap created by the legs and solder beads on the underside of its PCB. As insurance against any future adhesive failure, a zip-tie was used to secure it in the middle as well. This will not create a heat issue since it is right in front of the cold air intake fan and the PoE splitter heat dissipation vents are on its sides. Mounting it on top of the PoE splitter created more space to access the Ethernet ports on the router PCB and allowed me to rely less on zip-ties this time since, on the RPi build, I found it was easy to overtighten them and shear off capacitors from the buck converter which is a show-stopper. The PoE splitter already had nice mounting holes and does not generate much heat so I left its cover on and used the shortest height standoffs to mount it. This still left some nice space underneath it to route power cabling. 
 
-#### Buck Converter
-This was secured to the top of the PoE splitter with layers of mounting tape to bridge the gap created by the legs and solder beads on the underside of its PCB. As insurance against any future adhesive failure, a zip-tie was used to secure it in the middle as well. This will not create a heat issue since it is right in front of the cold air intake fan and the PoE splitter heat dissipation vents are on its sides. Mounting it on top of the PoE splitter created more space to access the Ethernet ports on the router PCB and allowed me to rely less on zip-ties this time since, on the RPi build, I found it was easy to overtighten them and shear off capacitors from the buck converter which is a show-stopper :)
+#### Layout and Cable Routing
+Comoponents were mounted to the plastic mounting plate of the enclosure using a combination of nylon standoffs/screws/nuts and smaller zip-ties. I made greater use of the nylon standoffs in this build to better secure each component leaving the zip-ties for things like the Lever-Nuts which have no mounting holes themselves. Components were oriented on the mounting plate from coldest to hottest running for most efficient heat dissipation: PoE splitter and buck converter on the bottom, router PCB in the middle, and modem at the top. One set of horizontally oriented Lever-Nuts was used for power distribution out from the PoE splitter to the DC barrell connector inputs on the router and buck converter. A second set of vertically oriented Lever-Nuts was used to distribute power out from the bare wire crimp connector on the buck converter to the USB hub and the power-only end of the USB Y-cable (via USB-A to DC adapter) to supplement the modem.
+
+Since the package of DC Male and Female connectors I bought had excess wire, I was able to clip them shorter and use the additional lengths of wire to distribute the power from the buck converter to the vertically oriented Lever-Nuts. Wires and connectors were routed into natural channels between components and secured with zip-ties to reduce strain, eliminate pinch points, and leave sufficient access for fingers to access connectors, SIMs, etc. without snagging anything. After all bare wire ends were terminated in the Lever-Nuts, the Lever-Nuts themselves were secured to the mounting plate with some of the smaller zip-ties to ensure they were not snagged and unlocked inadvertently.
 
 #### EA8300 PCB
-This was the largest, widest component so it had to go as far up as it could in the enclosure yet leaving space for the modem to mount just over it as well. The Ethernet ports were oriented downward for easier routing of power to the DC connector and access to plug in Ethernet cables. Two out of the four factory screw holes in the PCB were inside the edges so nylon standoffs were used to secure it easily. The top two holes were not full holes since they were on the edge of the PCB and needed washers added to fully secure them.
+This was the largest, widest component so it had to go as far up as it could in the enclosure while leaving space for the modem to mount just above it as well. The Ethernet ports were oriented downward for easier routing of power to the DC connector and access to plug in Ethernet cables. Two out of the four factory screw holes in the PCB were inside the edges so nylon standoffs were used to secure it easily. The top two holes were not full holes since they were on the edge of the PCB and needed washers added to fully secure them.
 
 #### NGFF USB Adapter
 The USB adapter used for the modem in this build already had mounting holes so using the tall nylon standoffs to mount it was easy and raised it above the router PCB far enough to allow for easy SIM insertion/ejection. The adapter and modem were centered over the router PCB to allow room for fingers in the channel between the two router heatsinks.
 
+#### Voltage Validation
+Because we are working with different voltages and have invested a good chunk of change into the components we are connecting, it is always wise to check all voltage outputs before making the individual component power connections and plugging the PoE injector into mains. First up, I plugged the PoE injector into the wall outlet and connected it via Cat6 cable to the PoE splitter, ensuring the PoE splitter was set to 12v. Nothing was connected to the buck converter at this point. Once I verified the splitter was ouputting 12v for the router and buck converter I connected it to the buck converter and verified the buck converter was providing 5v output. The multimeter reading of a steady 5.20v confirmed we were well within USB spec (official range is 5.25 down to 4.45 for most USB devices powered from a 5v power supply rail).
+
+I then tested the male DC connectors attached to the vertically oriented Lever-Nuts (connected to buck converter output) with the multimeter and verified they both read 5.20v as well. From there I connected these same male DC connectors to the USB hub and USB Y-cable to test the voltage of each USB connection with the USB power meter. Both tested in range at 5.15v which is within margin of error compared to the multimeter readings. In the photo matrix under this section I have included a rough electrical wiring diagram showing the voltages and how each component is connected to its power source. 
+
+#### USB and Ethernet Connections
+Once power connections were in place I removed power from the injector to run data cabling. First I connected the NGFF to USB modem adapter to the female end of the USB Y-cable and the data-only end of the same to the USB hub. The fans were then connected to other ports on the USB hub. The hub was then connected to to USB 3.0 port of the router PCB. The USB hub was positioned to the left of the router PCB. The hub was attached to a 4" cut section of the clear, 90 degree, plastic "corner protector" with mounting tape and mounted to the mounting plate of the enclosure with medium height nylon standoffs and nuts (the medium height was used to create a channel for the USB Y-cable power cable connection). A small foam-tape adhered zip-tie tie-down was used to secure the fan cables to the inside of the lid to eliminate pinching of their USB power cables. Finally a 1' Cat6 cable was connected from the RJ45 Data port of the PoE splitter to a LAN port on the router. 
+
+#### FPC Antennas
+The 4x FPC antennas were mounted equal distances apart in the top of the enclosure body just above the modem. The 20cm cables length necessitated this positioning but you could mount them in the sides of the body as well if you purchased some MHF4 extension cables. The back of the antennas features a 3M brown label self-adhesive which should provide sufficient adhesion in both hot and cold environments. The MHF4 connectors of the antennas were connected to the modem *very* gingerly using the end of a plastic spudger. The trick is to line them up exactly over the modem connector and apply centered, even pressue until they snap on. Do *NOT* use a metal tool (such as a screwdriver) for this. I have seen way too many people slice through cables and/or shear connectors off the modem when the two metal surfaces invariabley slip away from each other under pressure.
+
 <table >
 	<tbody>
 		<tr>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h50_41.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h26_25.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h42_16.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h34_42.png" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h26_25.png" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h50_41.png" width="200" height="200" /></td>
 		</tr>
 		<tr>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h33_36.png" width="200" height="200" /></td>
@@ -253,51 +265,17 @@ The USB adapter used for the modem in this build already had mounting holes so u
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h31_51.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h34_09.png" width="200" height="200" /></td></td>
 		</tr>
-	</tbody>
-</table>
-
-### Connections and Cabling
-#### Power Cables
-Once the main components were mounted to the mounting plate the next step was connecting everything up and routing the wires. I began with what was already mounted to the mounting plate, starting with the bare wire connector output on the buck converter. Since the package of DC Male and Female connectors I bought had excess wire, I was able to clip them shorter and use the additional lengths of wire to distribute the power from the converter to the Lever Nuts. From the Lever Nuts, I connected two female DC connectors; one of these connected to the male-DC-to-USB-C to power the RPi, the other connected to the male-DC-to-male-DC cable to power the modem EVB. The lengths of wire between the converter and Lever Nuts, and from the Lever Nuts to the female DC connectors were all cut to appropriate lengths and neatly routed underneath the EVB and RPi. They were then secured through the mounting plate with the smaller zip ties to keep them stationary and ensure no contact was made with any of the solder joints underneath the RPi (where the male and female DC connectors were joined. Small pieces of mounting tape were used to adhere the Lever Nuts to the mounting plate to keep them from moving around.
-
-#### Voltage Validation
-Because we are working with different voltages and have invested a good chunk of change into the components we are connecting, it is always wise to check all voltage outputs before making the individual component power connections and plugging the PoE injector into mains. First up, I plugged the PoE injector into the wall outlet and connected it via Cat6 cable to the PoE splitter, ensuring the PoE splitter was set to 12v. Nothing was connected to the buck converter at this point. Once I verified the splitter was ouputting 12v (not pictured) I connected it to the buck converter and verified it was providing 5v output. The multimeter reading of a steady 5.20v confirmed we were well within USB spec (official range is 5.25 down to 4.45 for most USB devices powered from a 5v power supply rail).
-
-I then tested the female DC connectors both coming of the Lever Nuts and verified they both read 5.20v as well. From there I connected the double sided male DC connector for the EVB and the DC to USB-C connector for the RPi. The EVB connector tested at 5.20v as expected. Now, since it is generally quite hard to get standard sized multimeter probes wedged into a USB-C connector, to test that one I relied on a fancy pants USB voltage and load tester which features a USB-C input. This showed a reading of roughly 5.15v which was in line with my probe readings (some juice is used by the device itself for the display thus the slight difference in reading). In the photo matrix under this section I have included a rough electrical wiring diagram showing the voltages and how each component is connected to its power source. The only piece not pictured in the illustration is the USB Y-cable power connector which is used to provide supplement power to the USB hub and, in turn, the fans. You can see the y-cable plugged into the converter in the last picture (when the mounting plate was reinstalled into the enclosure).
-
-#### USB and Ethernet Connections
-Once power connections were in place (but disconnected from the injector), I connected the USB-C to USB-A cable between the modem EVB and the RPi USB 3.0 port routing the cable nicely in an 'S' shape between/under RPi and EVB PCBs. The USB Y-cable connected to the buck converter was then routed out from under the EVB so that the data+power end fit nicely in the edge gap between the mounting plate and the enclosure wall. A short miniUSB to USB-A cable from the USB hub was plugged into the female side of the y-cable and the data+power male end was connected to the RPi USB 2.0 port. The USB hub was positioned in the bottom left corner of the enclosure positioning it nicely within reach of the USB connectors from the fans. A small piece of mounting tape was used to adhere the hub to the inside wall of the enclosure and keep it staionary before plugging the fans into it. Finally a 1' Cat6 cable was connected from the RJ45 Data port of the PoE splitter to the Gigabit NIC port on the RPi. In the final picture of the matrix below you can see the wire gland placement with injector Cat6 Data+Power PoE cable passing through it and connecting to the PoE splitter.
-
-#### PCB Antennas
-The 4x PCB antennas were mounted equal distances apart on either side of the case towards the top (metal traces facing upward), furthest away from the highest voltage source. The 20cm cables were a bit short; in hindsight I probably should have ordered them with longer ones for cleaner routing in the gap between the mounting plate and top of the case. Oh well, this will work. The back of the antennas featured a 3M white label self-adhesive. I looked it up on the 3M site and they claim it should hold reasonably in both cold and hot environments so we will not bother with our own mounting tape. The MHF4 connecters were then connected to the modem *very* gingerly using the end of a plastic spudger. The trick is to line them up exactly over the modem connector and apply centered, even pressue until they snap on. Do *NOT* use a metal tool (such as a screwdriver) for this. I have seen way too many people slice through cables and/or shear connectors off the modem when the two metal surfaces invariabley slip away from each other under pressure.
-
-
-
-<table >
-	<tbody>
 		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5385.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5386.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5387.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5388.jpg" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h12_59.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h12_36.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h37_09.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h37_36.png" width="200" height="200" /></td></td>
 		</tr>
 		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5389.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5390.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5391.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5392.jpg" width="200" height="200" /></td>
-		</tr>
-		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5393.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5394.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5413.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/RenderedImage.jpg" width="200" height="200" /></td>
-		</tr>
-		<tr>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5419.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5420.jpg" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/5g_modem_wiring.png" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/IMG_5440.jpg" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_29.png" width="200" height="200" /></td>
+			<td><img src=https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_02.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h40_25.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h24_33.png" width="200" height="200" /></td></td>
 		</tr>
 	</tbody>
 </table>
