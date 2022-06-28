@@ -134,6 +134,9 @@ I've included affiliate links to items which are sold by The Wireless Haven as I
   * Provides PPPS (Per Port Power Switching)
   * Discontinued but still available under $25 via used channels: https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2553889.m570.l1313&_nkw=HU3641V1&_sacat=0
   * Alternative current model which has one switched port is the Amazon Basics U3-4HUB which can be used with the linked fans' included USB splitter to switch power on both fans leaving the remaining 3 ports unswitched for modem connection etc.: https://a.co/d/0gvHBJy
+* **1-18" Corner Guard**
+  * Comes in 4' but can be cut down to use as 90 degree mount bracket for the USB hub
+  * https://www.menards.com/main/mouldings/panel-mouldings/trimaco-1-1-8-x-4-corner-guard-with-nails/01184g/p-1549351771019-c-8164.htm?tid=-8168026590023558773&ipos=3
 * **18AWG DC Power Cables**
   * 5.5x2.1mm 
   * Male+Female pairs (6x)
@@ -263,19 +266,19 @@ The 4x FPC antennas were mounted equal distances apart in the top of the enclosu
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h33_36.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h31_07.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h31_51.png" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h34_09.png" width="200" height="200" /></td></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h34_09.png" width="200" height="200" /></td>
 		</tr>
 		<tr>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h12_59.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h12_36.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h37_09.png" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h37_36.png" width="200" height="200" /></td></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h37_36.png" width="200" height="200" /></td>
 		</tr>
 		<tr>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_29.png" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h36_02.png" width="200" height="200" /></td>
+			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/5g_linksys_wiring.jpg" width="200" height="200" /></td>
 			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_09h40_25.png" width="200" height="200" /></td>
-			<td><img src="https://github.com/hazarjast/5g_linksys_build/blob/main/assets/2022-06-28_11h24_33.png" width="200" height="200" /></td></td>
 		</tr>
 	</tbody>
 </table>
