@@ -180,7 +180,7 @@ Instead of a 5G modem evaluation board (EVB) this build will use a simpler adapt
 Already covered selection [reasons for this component](https://github.com/hazarjast/5g_linksys_build/blob/main/README.md#design-philosophy--guiding-principles).
 
 ### Amazon Basics HU3641V1
-In the RPi build I found the D-Link hub had a nasty habit of sometimes disconnected completely from the system when power cycled. Since that hub was only used for controlling the fans and not connecting the modem I was able script around the issue by adding a HotPlug rule which reset the fan status when the hub disconnected/reconnected. However, this behavior isn't really acceptable when we only have one USB port to work with on the Linksys and rely on the hub to always keep the modem connected while *only* cycling power to the fans. So, I tested the Amazon Basics HU3641V1 this time which is equally supported by usbhubctl but without the disconnect behavior of the D-Link.
+In the RPi build I found the D-Link hub had a nasty habit of sometimes disconnecting completely from the system when power cycled. Since that hub was only used for controlling the fans and not connecting the modem I was able script around the issue by adding a HotPlug rule which reset the fan status when the hub disconnected/reconnected. However, this behavior isn't really acceptable when we only have one USB port to work with on the Linksys and rely on the hub to always keep the modem connected while *only* cycling power to the fans. So, I tested the Amazon Basics HU3641V1 this time which is equally supported by usbhubctl but without the disconnect behavior of the D-Link.
 
 ### 80mm USB PC Fans (2x)
 Already covered [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#80mm-usb-pc-fans-2x).
