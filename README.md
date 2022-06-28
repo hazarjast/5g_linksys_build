@@ -32,12 +32,10 @@ If this project benefitted you in some way please consider supporting my efforts
       - [FPC Antennas](#fpc-antennas)
   * [Software Build](#software-build)
     + [Operating System Selection](#operating-system-selection)
-    + [OpenWRT Pre-installation Prep](#openwrt-pre-installation-prep)
     + [OpenWRT Install and Initial Configuration](#openwrt-install-and-initial-configuration)
-    + [Temporary Creation of a USB WAN](#temporary-creation-of-a-usb-wan)
     + [Install All Required Packages](#install-all-required-packages)
-    + [Flash Modem Firmware Update](#flash-modem-firmware-update)
-    + [Configure Modem Interface & Remove Temp USB WAN](#configure-modem-interface--remove-temp-usb-wan)
+    + [Modem Firmware Update and Data Interface Configuration](#modem-firmware-update-and-data-interface-configuration)
+    + [Configure Modem Interface and Remove Ethernet WAN](#configure-modem-interface-and-remove-ethernet-wan)
     + [Add Custom Firewall Rules](#add-custom-firewall-rules)
     + [Configure DMZ to Main Router](#configure-dmz-to-main-router)
     + [Helper Scripts](#helper-scripts)
@@ -47,20 +45,10 @@ If this project benefitted you in some way please consider supporting my efforts
       - [nsacheck.sh](#nsachecksh)
     + [Switch Modem to Generic Image](#switch-modem-to-generic-image)
     + [Disable Modem NR SA](#disable-modem-nr-sa)
-    + [Built and Configure SMS Tool](#build-and-configure-sms-tool)
+    + [Build and Configure SMS Tool](#build-and-configure-sms-tool)
   * [Results](#results)  
   * [ToDo List](#todo-list)
   * [Historical Background](#historical-background)
-    + [Let's start at the beginning...](#lets-start-at-the-beginning)
-    + [Android Stuck to the Wall](#android-stuck-to-the-wall)
-    + [My Very First Netgear](#my-very-first-netgear)
-    + [Inexpensive Sierra Modem](#inexpensive-sierra-modem)
-    + [The Birth of ROOter](#the-birth-of-rooter)
-    + [Useless IP-Passthrough and a Solution](#useless-ip-passthrough-and-a-solution)
-    + [ROOter w/ Sierra EM7455 and 'The Need for Speed'](#rooter-w-sierra-em7455-and-the-need-for-speed)
-    + [Rethinking antennas and Modem Placement](#rethinking-antennas-and-modem-placement)
-    + [Netgear Love-Affair Continues](#netgear-love-affair-continues)
-    + [The Push to 5G](#the-push-to-5g)
 
 ## Design Philosophy & Guiding Principles
 This project strives to align with the same overall goals and principles originally laid out for my [5G RPi PoE Modem Build](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#design-philosophy--guiding-principles). Due to supply chain issues the RPi 4 have become prohibitively expensive for such a simple thing as a modem host and, in general, simply unobtainable for nearly any hobbyist project as of late (blame the early Helium crypto miners and COVID, I guess). This project was birthed as I began the search for an SBC or equivalent hardware platform which folks could actually get their hands on without paying a king's ransom or waiting months to receive. The basic qualifiers for the new were host board were:
@@ -285,27 +273,10 @@ The 4x FPC antennas were mounted equal distances apart in the top of the enclosu
 
 ## Software Build
 ### Operating System Selection
-I decided to go with the latest stable OpenWRT (21.02.1) and ModemManager (1.16.6) for this build. I have been following the ModemManager port to OpenWRT for awhile and from the reports I read it seemed this combo was now generally quite reliable. As much as I and many others enjoy and benefit from having used ROOter in previous builds I do feel it can be a bit slow and bloated at times with odd errors from the litany of interconnected scripts which sometimes only a reboot will solve. Since ROOter maintains such a wide router hardware compatibility and continues to receive many feature requests/enhancements from its large and active community, it is not immune to the increasing overhead and complexity that go hand-in-hand with this.
-
-ROOter is certainly the "swiss army knife" of cellular WAN builds but for this build I really wanted to stick with something purpose-built and as close to stock OpenWRT as possible. Especially because I'm not looking for something to perform advanced routing, firewalling, VPN brokering, or DNS filtering capabilities as I already have pfSense/OPNSense with WireGuard and NextDNS running on much more capable hardware to handle these duties. I much prefer a modular approach to network design with a general outlook that can be summarized by the belief that a "Jack of all trades is master of none." So, in this case, we will let our 5G modem host be a modem host and not bog it down with much else.
-
-### OpenWRT Pre-installation Prep
-The starting point for this build was of course RTFM (reading the 'fine' manual). In this case OpenWRT already has a nice wiki page for the family of RPi devices: https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi . Here I learned that it is recommended to first load Raspberry Pi OS to perform selection of WiFi country code (in case for some reason we wish to use the WiFi for something later on), and flash the latest eeprom update from the inbuilt 'rpi-eeprom-update' utility for best compatibility. From my Windows 10 PC I downloaded the latest RPi OS Lite image (https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2022-01-28/2022-01-28-raspios-bullseye-armhf-lite.zip) and flashed it to microSD using Balena Etcher. Once that was done I inserted the card into the RPi and connected the power to my PoE injector to power everything up. I connected the Ethernet data connection from the injector to my existing LAN so that I could hopefully just SSH into it after it booted and provide a source of internet for the eeprom update.
-
-In OPNSense I found the DHCP lease IP of the booted RPi but quickly came to know that the RPi folks do not have SSH daemon enabled by default so I had to power the RPi off, remove the SD card, mount it on my Ubuntu laptop, mount the '/boot' filesystem from the SD card, and 'touch ssh' there (creating an empty file called 'ssh'). Once this was done I was able to re-insert the SD card into the RPi and it allowed me to SSH into it from there with the default RPi OS root credentials. I then ran 'raspi-config' and chose the option to update 'raspi-config' to ensure I had the latest version. Once 'raspi-config' was updated I set the WiFi country code as recommended by the OpenWRT wiki and set the 'raspi-config' 'Advanced' settings from 'default' relase to 'latest'. This allowed me to get the latest eeprom update via the following commands:
-
-```bash
-sudo rpi-eeprom-update
-sudo rpi-eeprom-update -a
-sudo reboot
-```
-
-After the reboot I ran `sudo rpi-eeprom-update` once more to make sure it updated to the latest stable version (it did). I was ready then to flash OpenWRT.
+I decided to go with the latest stable OpenWRT (21.02.3) and ModemManager (1.16.6-1) for this build. All other rationale for the decision to go with OpenWRT and ModemManager as the platform combo is covered in my earlier RPi build info found [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#operating-system-selection).
 
 ### OpenWRT Install and Initial Configuration
-After powering off the RPi ('sudo shutdown -now'), I removed the microSD card and placed it in my Windows PC again to flash the latest stable image downloaded here: https://downloads.openwrt.org/releases/21.02.1/targets/bcm27xx/bcm2711/openwrt-21.02.1-bcm27xx-bcm2711-rpi-4-ext4-factory.img.gz . Using 7-zip I extracted the .img file and flashed it to SD using the same Balena Etcher program as before. We chose the ext4 image over squashfs since space is not a concern (using a 32GB SD card in this case). The ext4 image may wear down the SD storage quicker but considering OpenWRT active logging is all done in RAM and SD cards are cheap to me working with ext4 is worth this trade-off. Especially if we need to expand the root filesystem later for more software package storage etc. Extending the overlay filesystem via extroot under squashfs is a much bigger pain in the butt, IMHO. If ext4 is good enough for the many diverse deployments of RPi OS, then it is good enough for OpenWRT in my book :)
-
-Once the SD card was replaced I disconnected it from my existing LAN and connected it directly to my test bench PC (since the default OpenWRT is 192.168.1.1 it would conflict with any existing LAN using that subnet). Once booted up, I logged in to the web interface and set the root password:
+The starting point for this build was of course RTFM (reading the 'fine' manual). In this case OpenWRT already has a nice wiki page for the EA8300 router: https://openwrt.org/toh/linksys/ea8300 . I connected the Ethernet data connection from the injector to my workbench PC's NIC so that I could follow the flashing instructions provided. Once booted up, I logged in to the web interface and set the root password:
 
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_10h39_15.png" />
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_10h39_30.png" />
@@ -322,75 +293,26 @@ Given the default IP will conflict with many existing routers running on 192.168
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_10h45_24.png" />
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_11h21_12.png" />
 
-### Temporary Creation of a USB WAN
-First hurdle to get over was the fact that RPi only has one Ethernet port and I needed that to stay configured as LAN for LuCI (web gui) and SSH access. One could move forward in one of three ways:
-
-1. Determine all *.ipk packages and dependencies needed to run a Quectel modem and download them all for offline installation (extremely painful).
-2. Setup VLANs with a switch supporting 802.11q  (https://openwrt.org/docs/guide-user/network/vlan/managed_switch)
-3. Plug in a USB network adapter (physical 'eth1') to assign as WAN.
-
-Option one is very unrealistic and I have pity for whoever chooses this one. VLANs are nice and probably even better to consider using going forward but all my managed switches are currently being used so I went for option three since I had a Trendnet USB 3.0 Ethernet adapter lying around unused. Only downside to this was that it had an Asix chipset which wasn't supported out of the box. Good news was that it only needed a handful of kmod packages installed to get it working (downloaded them on my workbench PC over wifi and then transferred them to the RPi via WinSCP (if your adapter has a different chipset you'll likely need different packages for this part but this should give an idea of what to look for):
-
-https://downloads.openwrt.org/releases/21.02.1/targets/bcm27xx/bcm2711/packages/kmod-libphy_5.4.154-1_aarch64_cortex-a72.ipk
-https://downloads.openwrt.org/releases/21.02.1/targets/bcm27xx/bcm2711/packages/kmod-mii_5.4.154-1_aarch64_cortex-a72.ipk
-https://downloads.openwrt.org/releases/21.02.1/targets/bcm27xx/bcm2711/packages/kmod-usb-net_5.4.154-1_aarch64_cortex-a72.ipk
-https://downloads.openwrt.org/releases/21.02.1/targets/bcm27xx/bcm2711/packages/kmod-usb-net-asix-ax88179_5.4.154-1_aarch64_cortex-a72.ipk
-
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h11_52.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h12_01.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h12_48.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h14_49.png" />
-
-We can then go back into the web interface to configure the newly added device as our temporary WAN interface (you should have your USB adapted to your existing LAN now so it will have access to the Internet once connected):
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h16_19.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h16_27.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h16_59.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h17_34.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h18_00.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-08_14h18_50.png" />
-
 ### Install All Required Packages
-Now that the RPi has Internet access via our temporary WAN, go back to the Putty SSH prompt and issue the follow commands to update the software package lists and install the packatges we need (there are actually more packages which will be installed but they will be installed automatically as dependencies for the packages listed below):
+Once the EA8300 LAN subnet has been changed, I then connected the WAN port to my existing home LAN to provide Internet connectivity. Once Internet connectivity was established, I used Putty to connect to the EA8300 over SSH and issued the following commands to update the software package lists and install the packatges required for this build (there are actually more packages which will be installed but they will be installed automatically as dependencies for the packages listed below):
 
 ```bash
 opkg update
-opkg install usbutils kmod-usb-net-qmi-wwan kmod-usb-serial-option luci-proto-modemmanager uhubctl socat coreutils-timeout iptables-mod-ipopt pservice
+opkg install usbutils kmod-usb-net-qmi-wwan kmod-usb-net-cdc-mbim kmod-usb-serial-option luci-proto-modemmanager uhubctl socat coreutils-timeout iptables-mod-ipopt pservice
 reboot
 ```
 
-### Flash Modem Firmware Update
-It is usually a good idea to try and have the modem running on the latest available firmware as this generally includes bug fixes and other enhancements by the manufacturer. Here I will lay out the steps for flashing updated firmware under Windows (EVB should be connected to a PC via USB cable and power toggle should be set to USB power only). The firmware updates and their respective flash utilities can be obtained through the vendor you purchased the modem from, assuming they are reputable (shout out to Rich over at The Wireless Haven). In the case of Quectel modems, there are three items which are required to update the firmware: Drivers, QFlash utility, and the modem firmware update itself. Once you have downloaded archives for all three (usually .zip files) you should extract them then proceed as follows below.
+### Modem Firmware Update and Data Interface Configuration
+Flashing of Quectel firmware updates is covered in the original RPi build [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#flash-modem-firmware-update). Additionally, in this EA8300 build the RM502Q-AE I sourced was pulled from another existing build and was configured with a USB composition type of QMI along with passing data over PCIe (aka MHI or 'Modem Host Interface'). Because the USB controller interface on the EA8300 is different/older than the one in our RPi build it did not handle the many simultaneous connection streams utilized by the QMI interface driver so it was necessary to switch the modem to use MBIM for this build. Additionally, since we will be passing data over the USB interface we will need to set the modem to do this since it was using the PCIe interface to do this in the router it was removed from. This was accomplished by issuing the following AT commands:
 
-First we run the drivers installer executable as Adminstrator and let it finish:
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h02_40.png" />
+NOTE: This is not necessary if your modem is already in MBIM composition and passing data over USB.
+```bash
+echo -e AT+QCFG=\"data_interface\",0,0 | socat - /dev/ttyUSB2,crnl
+echo -e AT+QCFG=\"usbnet\",2 | socat - /dev/ttyUSB2,crnl
+echo -e AT+CFUN=1,1 | socat - /dev/ttyUSB2,crnl
+```
 
-Next we will open Device Manager and expand the COM Ports, making specific note of the modem's DM port:
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h04_09.png" />
-
-From the extracted QFlash archive, we will move the 'release' folder to the root of C:\ (doesn't have to be this exact path but there are lots of spaces in the file path of our user's Download directory and the utility does not like spaces; thus easy enough to move to root drive letter for our usage):
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h07_34.png" />
-
-From the extracted firmware folder we will move the 'update' folder into the 'release' folder we just moved to the root of C:\:
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h07_50.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h08_19.png" />
-
-Now we will execute "QFlash.exe" as Administrator:
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h08_49.png" />
-
-Click on the "Load FW" button and select the "prog_firehose*.mbn" file from under the update folder which we moved under 'C:\Release':
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h10_46.png" />
-
-Set the COM port to the DM port we made note of in the Device Manager and baudrate to '4608006'. Make absolutely sure you've selected the correct DM COM port number!!!:
-
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h11_05.png" />
-
-Click 'Start' and allow the modem to update. This may take some minutes but will end with status message 'PASS':
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h12_49.png" />
-<img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-08_16h14_13.png" />
-
-Once firmware is successfully flashed. Wait at least 30 seconds before disconnecting it from the PC and reconnecting it to the RPi to make sure all post-flash actions have completed.
-
-### Configure Modem Interface & Remove Temp USB WAN
+### Configure Modem Interface & Remove Ethernet WAN
 Once packages are installed and OpenWRT has been rebooted, log back into the web interface to configure the modem interface (I have called mine 'WWAN'):
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-10_17h39_30.png" />
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-01-10_17h40_28.png" />
@@ -418,13 +340,7 @@ ip6tables -w -t mangle -I POSTROUTING 1 -o wwan0 -j HL --hl-set 65`
 If you modem device is not 'wwan0' updated it accordingly in the rules above. The TTL value of 65 is used here because TTL decrements and you need it to hit the cellular network with a TTL of 64 (65-1=64). This value can vary with some LAN configurations and cellular carriers so you may have to use something like 64 or 66 (some claim simply setting it to 64 is carrier agnostic but this has not been my experience, YMMV).
 
 ### Configure DMZ to Main Router
-Since I am using OPNSense as my main home router and will be using the RPi OpenWRT install as a modem host only, I will be statically assigning the IP address of my OPNSense WAN interface in the same IPv4 subnet as the RPi LAN and setting the RPi as the gateway for Internet traffic. My LAN devices are all IPv4 presently and my carrier, who is fully transitioned to IPv6 on their networks, has a mostly-working 464xlat implementation on their side so I won't be bothering with IPv6 addressing at the OPNSense router WAN or LAN as part of this project.
-
-At this point many will ask: Why not setup a bridge or IPPT (IP Passthrough) to pass the cellular public IP to the OPNSense WAN? There's a couple reasons for this the first of which is how my carrier assigns IP addresses. Since all newer provisioned SIMs from my carrier will only allow attach to the network with a dual stack IPv4v6 (or IPv6 only) PDP connection profile, ModemManager's primary IP for the modem interface is thus IPv6; the IPv4 address is then either set to a CGNAT IP by the carrier or set statically by ModemManager to 192.0.0.2 with gateway on the modem itself as 192.0.0.1. Obviously neither IPv4 address would be publicly routable address space so there's no use bridging it to OPNSense WAN. Furthermore, the IPv6 address assigned by the carrier to the modem interface appears to be behind carrier grade NAT (CGNAT) and/or otherwise blocking unsolicited inbound traffic on IPv6 (i.e. one cannot host anything on the LAN which must be accessed from the Internet. More info here: https://community.t-mobile.com/tv-home-internet-7/home-internet-service-ipv6-traffic-is-all-filtered-even-when-using-a-netgear-lte-router-no-port-forwarding-plz-fix-34310).
-
-On top of that, the carrier assigned IPv6 address is a /64 prefix in which Prefix Delegation, Router Advertisement or other means must be used in order connect LAN clients to the Internet (See: https://datatracker.ietf.org/doc/html/rfc7278). This is an annoyance to deal with and without a clear benefit or reward for going through the hassle of configuring it all. The second reason a bridge or IPPT setup would be not worth it is because the default QMI (and MBIM) modes of our modem are 'raw-IP' protocols, not Ethernet. Thus, traditional bridging at layer 2 does not work because our 'wwan0' device created by ModemManager is not a true Ethernet device and cannot be used as such; it does not even have a MAC address assigned by default. From a layer 3 perspective things do not get much easier even with tools like 'relayd' since that also only considers Ethernet or WiFi devices as suitable members for its bridging capabilities. If one wanted to truly create a pseudo-bridge/half-bridge/IPPPT interface to be used as WAN on another router, then you would need to setup an additional DHCP server, configure static routes, and utilize proxy ARP to accomplish the task (See: https://forums.whirlpool.net.au/thread/2530290?p=18#r360).
-
-For me the "juice is not worth the squeeze" when it comes to configuring a bridge or IPPT as WAN to my main router, this may be different if your carrier handles IP addressing differently or you are running IPv6 in your LAN. I understasnd one size does not fit all here. However, if we look into what typical IPPT and bridge setups offer outside of a publicly addressable IP, it would be the bypass of firewall and associated routing on a device when using it as WAN on another router. For this, we can simply setup a DMZ on the RPi firewall which forwards all traffic from the modem interface to our statically assigned WAN IP in OPNSense. OpenWRT doesn't have a specific "DMZ" feature but under "Port Forwards" we have the ability to accomplish the same thing:
+Since I am using OPNSense as my main home router and will be using the RPi OpenWRT install as a modem host only, I will be statically assigning the IP address of my OPNSense WAN interface in the same IPv4 subnet as the EA8300 LAN and setting the EA8300 as the gateway for Internet traffic. My full rationale for this DMZ configuration is explained in the original RPi build [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#configure-dmz-to-main-router). OpenWRT doesn't have a specific "DMZ" feature but under "Port Forwards" we have the ability to accomplish the same thing:
 <img src="https://github.com/hazarjast/5g_rpi4_build/blob/main/assets/2022-02-10_12h09_52.png" />
 
 In creating our rule, we will allow any protocol with a source zone of 'WWAN' (or whatever you named your modem interface), destination zone of 'lan', and an internal ip address of '192.168.21.2' (the IP address we will have statically assigned to the WAN of our main router). Be sure to 'Save & Apply' the changes:
@@ -587,32 +503,4 @@ My local tower offers only n71 SA which is not allocated much bandwidth at prese
 
 
 ## Historical Background
-### Let's start at the beginning...
-Back in 2016 I decided to drop my only viable broadband provider (Comcast) due to consistent outages and their unwillingness to search out and resolve the root issue. I was tired of paying top dollar for a service that always dropped out at the worst possible times. Looking at LTE speedtests on my cell phone it was clear that cellular networks had matured enough to offer the bandwidth and stability I required for home internet. However, it was not yet immediately clear how to craft a cellular internet solution which would service both the wired and wireless devices on my LAN with an acceptible level of stability and low maintenance overhead (both in terms of time and money).
-
-### Android Stuck to the Wall
-The early days of this quest must have looked pretty funny to most people. My first setup involved a cheap android phone (Blu R1 HD) velcro'ed up high on our living room wall (where it received the best signal) running PdaNet USB tethered to an i5 Intel NUC running Windows 10 with Internet Connection Sharing (ICS) enabled. The ICS enabled NIC on the NUC was then fed via Ethernet to an Asus RT-AC68U connected as WAN. After having Windows Updates reboot the NUC and/or other Windoze issues take down the Internet a few times I realized I needed to switch to a Linux based platform for better stability. This led me to switch to a GL.iNet GL-MT300N-V2 travel router running EasyTether to accomplish the same USB tether type connectivity back to the cell phone. This setup actually ran pretty well but still had droputs from time to time where EasyTether needed a restart etc.
-
-### My Very First Netgear
-At that point I knew I needed to remove the cell phone and underlying android tether apps from the equation in order to achieve even better staility and less intervention/maintenace. This led me first to the Netgear LB1120 which allowed me to eliminate the GL.iNet router and connect directly to the Asus router. Naively I also purchased the LB1120 based on its advertised ability of Bridge/IP-Passthrough for the cellular modem interface (later I found that most ceullar carriers were behind CGNAT which nullified any real benefit to having this passthrough functionality; more on that later). The LB1120 connected directly to the Asus router worked pretty well but the internal antennas were not great and speeds suffered because of this. I tried to mitigate this by mounting a pair of Yagi direction antennas on the side of my house pointed at the nearest cell tower with coax back into the house connected to the LB1120. However, due to the length of coax (30ft+), mis-matched impedence of the cable I had available (75-ohm vs. 50-ohm on the modem), and need for adapter pigtails (F-Type to TS9) this antenna setup did not improve signal by a sizable margin. I also found out that this modem didn't have that many LTE bands and lacked key features like Carrier Aggregation (CA). All of these things considered, I decided I needed to move on from the LB1120.
-
-### Inexpensive Sierra Modem
-At this point I started playing around with OpenWRT and began looking for an inexpensive modem to use with OpenWRT which could make use of my current antenna setup. I tested some hostless modems that provided an Ethernet interface in OpenWRT right out of the box. Those devices were convenient but those modems lacked a lot of US LTE bands and had limited aggregation capabilities. Finally I found the Sierra EM7455 which could be purchased inexpensively in resale channels like eBay due to the fact it came pre-installed with many OEM laptops which were coming off their lease agreements. The interface for the Sierra modem was raw-IP, not Ethernet, which required QMI or MBIM protocol on the host OS to establish a connection. The modem also had an M.2 connection so a USB-to-M.2 Key B adapter sled with SIM card slot was needed to connect it to a host OS.
-
-### The Birth of ROOter
-I quickly learned that vanilla OpenWRT required some very specific software packages and configuration in order to get it working with the EM7455 I purchased and the result was that as cheap, nicely modular, and configurable this solution was, it was not ready for primetime. About this time I came across the legendary Australian broadband forum, Whirlpool, and the prolific ROOter project thread headed up by user "Dairyman". This was the most excited I had been since starting my question as I finally found a group of folks doing exactly what I wanted to do: using off-the-shelf raw-IP modems with OpenWRT as host OS. This thread gave birth to what eventually became "ROOter GoldenOrb" firmware; a heavily customized version of OpenWRT which had support for many commodity raw-IP modems. Many of the problems raw-IP modems presented in OpenWRT were scripted around by Dairyman and his excellent team of colloaborators and delivered as a true FOSS labor of love via https://www.ofmodemsandmen.com/.
-
-### Useless IP-Passthrough and a Solution
-Around this time I began to understand US cellular networks better and found that even if one had a device capable of IP Passthrough to provide a public IP directly on the WAN interface of one's router, this was essentially useless because most cellular APNs (Access Point Names) provided a shared pool of IP addresses which were all behind carrier grade NAT (CGNAT) which meant there was no ability to forward ports from the Internet back to LAN client programs which required it (i.e. multiplayer video games, web servers, etc.). Only one carrier, Sprint (at the time), offered a consumer plan add-on option for having a true public IP and their coverage near me was not great. So, I looked into my options and found that a solution would be to use a virtual private server (VPS) which did have a public IP and establish a VPN tunnel between it and my LAN in order to forward any ports I needed to. At the time the most feasible VPN option was OpenVPN. This led me to swap the Asus router out for an x86 thin client running pfSense. A much more powerful option for routing port forward OpenVPN traffic.
-
-### ROOter w/ Sierra EM7455 and 'The Need for Speed'
-Back on the modem front, I flashed an older Linksys WRT router with GoldenOrb to use with the Sierra EM7455 I had purchased and was soon off to the races. The result was a WAN connection to my Asus WiFi router which was nearly as stable as the LB1120 I had used previously but with better speeds due to more LTE band and carrier aggregation support. I ran this ROOter setup for quite a while with my sub-par Yagi MIMO antenna setup but eventually got the "itch" for more speed which led me to the Netgear MR1100. The MR1100 was a hotspot device but provided a Cat.16 LTE modem (the EM7455 was only Cat.6) which offered the ability of 4x4 MIMO and additional CA capabilities, could be powered without the battery, and most importantly, featured an Ethernet port directly on the device which abstracted the problem of dealing raw-IP interfaces directly.
-
-### Rethinking antennas and Modem Placement
-When migrating to the MR1100 I used the opportunity to re-assess my antenna setup and signal loss which affected it. It soon became clear from my research that in order to achieve the best signal strength one should limit the distance between the modem and the antennas to be as short as possible. With this in mind I worked on creating an external, weatherproof enclosure for the MR1100 with short adapter pigtails which allowed the unit to connect to N-type MIMO panel antennas which I had purchased after selling the Yagis (Yagis were also not great with summer foliage between myself and the tower; panel sytle directionals are more tolerant in this regard). In order to connect data and power to the unit outside, I purchased an 802.3AT power over Ethernet (PoE) injector and Gigabit splitter. This setup along with the new pfSense router/firewall, and new Ubiquiti UniFi WiFi APs provided the most stable setup thus far and I ran this configuration for over a year.
-
-### Netgear Love-Affair Continues
-Soon, I got the speed itch again and began searching for my next setup which should include the latest LTE bands and CA combinations added by my carrier. My search again led me back to Netgear and their new LBR20 unit is part of the Orbi mesh WiFi ecosystem. I honestly could care less for the WiFi capabilities as my UniFi setup was already providing the speed and coverage I needed across all devices, but the Cat.18 Quectel EG18NA modem inside the LBR20 and OpenWRT based firmware underneath is what caused me to pre-order it even before it was released. I disassembled the unit and converted it into an outdoor PoE powered solution reusing the panel antennas I used with the MR1100 and it has been quite solid running Voxel firmware. My complete journey with the LBR20 is covered here in detail so I won't re-hash it all here: https://wirelessjoint.com/viewtopic.php?t=1876 .
-
-### The Push to 5G
-While the LBR20 still serves my current needs, I am looking ahead to 5G (New Radio, aka 'NR') since its deployment has recently become available in my area. From my initial testing, the connection speed increase (both download and upload) and lower latency provided even by NR non-standalone (NSA) are significant when compared to LTE so this pushed me to look at 5G modems. I initially looked at the Netgear NBR750 as it is the 5G/WiFi 6 successor to my LBR20. However, it seems Netgear has lost its blessed mind when pricing this unit. At present in the US it is only sold in a combo pack (SKU: NBK752) with a paired Orbi mesh AP (model RBS750) for the princely (outrageous?) sum of $1099.99 USD. After my recovery from nearly choking to death when my eyes beheld this price, I looked up the FCC filing for it and saw that it's using a commodity modem used in many other 5G devcies: a Quectel RM502Q-AE. Armed with this knowledge, I begain to craft my next modem setup around the RM502Q-AE given it could be purchased for less than half the price of an NBR750 setup. Thus this '5G Raspberry Pi Build' was born :)
+This project is a spinoff of my original [RPi 4 based build](https://github.com/hazarjast/5g_rpi4_build). Full historical context on what motivated that project, and this one, can be found [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#historical-background).
