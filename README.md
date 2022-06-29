@@ -121,8 +121,9 @@ I've included affiliate links to items which are sold by The Wireless Haven as I
   * Provides PPPS (Per Port Power Switching)
   * Discontinued but still available under $25 via used channels: https://www.ebay.com/sch/i.html?_from=R40&_trksid=p2553889.m570.l1313&_nkw=HU3641V1&_sacat=0
   * Alternative current model which has one switched port is the Amazon Basics U3-4HUB which can be used with the linked fans' included USB splitter to switch power on both fans leaving the remaining 3 ports unswitched for modem connection etc.: https://a.co/d/0gvHBJy
-* **1-18" Corner Guard**
+* **1-1/8" Corner Guard**
   * Comes in 4' but can be cut down to use as 90 degree mount bracket for the USB hub
+  * Available at most hardware stores. Because of the odd shape the price on Amazon etc. is ridiculous due to shipping considerations.
   * https://www.menards.com/main/mouldings/panel-mouldings/trimaco-1-1-8-x-4-corner-guard-with-nails/01184g/p-1549351771019-c-8164.htm?tid=-8168026590023558773&ipos=3
 * **18AWG DC Power Cables**
   * 5.5x2.1mm 
