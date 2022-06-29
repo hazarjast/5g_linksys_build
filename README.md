@@ -457,8 +457,11 @@ make package/luci-app-sms-tool/compile
 ```
 It will take some minutes to complete depending on CPU as it has to compile all dependencies along with the app source code. You can increase speed by adding the '-j[x]' switch where '[x]' is the number of CPUs the compile should be threaded across. With the default single CPU selection, it took 10-15 minutes to complete.The .ipk files for the resulting two apps, sms-tool and luci-app-sms-tool, will be located under './bin/packages/arm_cortex-a7_neon-vfpv4/base'. I used WinSCP to download them from my VPS and then upload them to the OpenWRT install. I've also placed a copy under https://github.com/hazarjast/5g_linksys_build/tree/main/images for easy download if you would like to use them. Once copied over to OpenWRT they can be instaled with opkg as normal:
 ```bash
-root@OpenWrt:~# opkg install luci-app-sms-tool_1.9.3-20220315_all.ipk
-Installing luci-app-sms-tool (1.9.3-20220315) to root...
+root@OpenWrt:~# opkg install sms-tool_2022-03-21-f07699ab-1_arm_cortex-a7_neon-vfpv4.ipk
+Installing sms-tool (2022-03-21-f07699ab-1) to root...
+Configuring sms-tool.
+root@OpenWrt:~# opkg install luci-app-sms-tool_1.9.4-20220325_all.ipk
+Installing luci-app-sms-tool (1.9.4-20220325) to root...
 Installing luci-compat (git-22.046.85744-f08a0f6) to root...
 Downloading https://downloads.openwrt.org/releases/21.02.3/packages/arm_cortex-a7_neon-vfpv4/luci/luci-compat_git-22.046.85744-f08a0f6_all.ipk
 Configuring luci-compat.
