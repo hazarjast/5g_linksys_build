@@ -498,6 +498,7 @@ My local tower offers only n71 SA which is not allocated much bandwidth at prese
 
 # ToDo List
 * Cover band/cell locking; maybe add helper/watcher scripts for this
+* Extroot for addition of USB storage
 
 
 ## Historical Background
