@@ -361,7 +361,7 @@ For daemonized scripts, we control them using the 'pservice' package. This is a 
 #### fancontrol.sh
 This script controls our case fans. On first run this script will add itself to 'pservice' config if not present already. Also, it checks that the selected modem AT interface is unbound from ModemManager so we can use it. If this isn't the case, it creates the necessary 'udev' rule to unbind the interface and prompts the user to reboot for the change to take effect. The script runs as a daemon under 'pservice' and checks the modem SoC temperature once per minute. If the temperature is over the defined limit threshold (55c by default), it will power on the fans. Once the modem has cooled below the limit, the fans are deactivated. Fan activation/deactivation by this script is logged to the system log; the history can be viewed with 'logread -e FAN_CONTROL'. Before running this script the following variables should be entered appropriately:
 
-**$HUB - Obtain w/ 'lsusb' ('idVendor:idProduct').
+**$HUB** - Obtain w/ 'lsusb' ('idVendor:idProduct').
 
 **$PORTS** - Populate with hub port numbers of connected fans using appropriate uhubctl syntax. Ex. '2-3' (ports two through three), '1,4 (ports one and four), etc.
 
