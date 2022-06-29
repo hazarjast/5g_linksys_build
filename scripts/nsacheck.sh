@@ -16,7 +16,7 @@
 #
 # *Dependencies*
 # This script requires 'modemmanager' and 'modemwatcher.sh' to be installed and active.
-# Also requires latest aarch64 version of Ookla's 'speedtest' script to exist under '/usr/bin'.
+# Also requires latest armhf version of Ookla's 'speedtest' script to exist under '/usr/bin'.
 # https://www.speedtest.net/apps/cli
 #
 # Copyright 2022 hazarjast (and aliases) - hazarjast at protonmail dot com
