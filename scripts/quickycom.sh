@@ -99,8 +99,8 @@ then
   exit 1
 else
   # Deactivate AT echo if it is enabled
-  [ -e $ATDEVICE ] && ATE0=$(timeout -k 5 5 echo -e ATE0 | socat - $ATDEVICE,crnl)
-  [ ! -z $ATE0 ] && [ $ATE0 = "OK" ] && timeout -k $TIMEOUT $TIMEOUT echo -e $CMD | socat - $ATDEVICE,crnl || \
+  [ -e $ATDEVICE ] && ATE0="$(timeout -k 5 5 echo -e ATE0 | socat - $ATDEVICE,crnl)"
+  [ $ATE0 = "OK" ] && timeout -k $TIMEOUT $TIMEOUT echo -e $CMD | socat - $ATDEVICE,crnl || \
   echo "$ATDEVICE appears to be busy. Try again later."
 fi
 
