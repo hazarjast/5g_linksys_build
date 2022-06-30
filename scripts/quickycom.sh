@@ -16,7 +16,7 @@
 # *Assumptions*
 # Specifically written for OpenWRT hosts with a modem managed by ModemManager.
 # Modem should be in a 'usbnet' mode which provides an AT port:
-# ex. RM502Q-AE in QMI mode
+# ex. RM502Q-AE in MBIM mode
 # This script should exist under '/scripts/'.
 # Just like raw 'socat' and other serial terminals, double quotes should be escaped (using backslash):
 # ex. 'qcom AT+QENG=\"servingcell\"'
@@ -26,6 +26,7 @@
 # $ATDEVICE, $MMVID, $MMPID, $MMUBIND - Found in '/lib/udev/rules.d/77-mm-[vendor]-port-types.rules':
 # ex. '...ttyUSB2...AT primary port...ATTRS{idVendor}=="2c7c", ATTRS{idProduct}=="0800", ENV{.MM_USBIFNUM}=="02"...'
 # ($ATDEVICE="/dev/ttyUSB2", MMVID="2c7c", MMPID="0800", MMUBIND="02")
+# For MBIM mode, $MMUBIND will be "03" instead of "02" since there is only one AT port provided.
 #
 # *Dependencies*
 # This script requires 'timeout' and 'socat' packages to be installed.
@@ -39,7 +40,7 @@ TIMEOUT=5
 ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
-MMUBIND="02"
+MMUBIND="03"
 
 # Preliminary logic to ensure this only runs one instance at a time
 if [ -f $PIDFILE ]
@@ -97,8 +98,9 @@ then
   echo "No AT command entered. Exiting."
   exit 1
 else
-  [ -e $ATDEVICE ] && ATE0=$(timeout -k 5 5 echo -e ATE0 | socat - $ATDEVICE,crnl) # Deactivate AT echo if it is enabled
-  [ $ATE0 = "OK" ] && timeout -k $TIMEOUT $TIMEOUT echo -e $CMD | socat - $ATDEVICE,crnl || \
+  # Deactivate AT echo if it is enabled
+  [ -e $ATDEVICE ] && ATE0=$(timeout -k 5 5 echo -e ATE0 | socat - $ATDEVICE,crnl)
+  [ ! -z $ATE0 ] && [ $ATE0 = "OK" ] && timeout -k $TIMEOUT $TIMEOUT echo -e $CMD | socat - $ATDEVICE,crnl || \
   echo "$ATDEVICE appears to be busy. Try again later."
 fi
 
