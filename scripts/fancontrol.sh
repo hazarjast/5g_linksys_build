@@ -27,6 +27,7 @@
 # $ATDEVICE, $MMVID, $MMPID, $MMUBIND - Found in '/lib/udev/rules.d/77-mm-[vendor]-port-types.rules':
 # ex. '...ttyUSB2...AT primary port...ATTRS{idVendor}=="2c7c", ATTRS{idProduct}=="0800", ENV{.MM_USBIFNUM}=="02"...'
 # (ATDEVICE="/dev/ttyUSB2", MMVID="2c7c", MMPID="0800", MMUBIND="02")
+# For MBIM mode, $MMUBIND will be "03" instead of "02" since there is only one AT port provided.
 #
 # $LIMIT - Temperature threshold in degrees celsius when fans should be activated.
 #
@@ -43,7 +44,7 @@ PORTS="2-3"
 ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
-MMUBIND="02"
+MMUBIND="03"
 LIMIT=55
 INTERVAL=60
 PIDFILE=/var/run/fan_control.pid
