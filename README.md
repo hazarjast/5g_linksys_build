@@ -43,6 +43,7 @@ If this project benefitted you in some way please consider supporting my efforts
       - [modemwatcher.sh](#modemwatchersh)
       - [quickycom.sh](#quickycomsh)
       - [nsacheck.sh](#nsachecksh)
+      - [failsafe.sh](#failsafesh)
     + [Switch Modem to Generic Image](#switch-modem-to-generic-image)
     + [Disable Modem NR SA](#disable-modem-nr-sa)
     + [Build and Configure SMS Tool](#build-and-configure-sms-tool)
@@ -77,7 +78,6 @@ I've included affiliate links to items which are sold by The Wireless Haven as I
 * **NGFF(M.2) to USB 3.0 Adapter**
   * Compact size
   * Provides supplemental power to modem when used with USB Y-Cable
-  * Dual spring-loaded nano SIM slots
   * M.2 Key B connector for modem
   * https://a.co/d/bR93nxd
   * Alternative single SIM slot version with supplemental DC input: https://thewirelesshaven.com/shop/mini-pcie-m2-adapters/modem-enclosure/usb3-0-to-ngff-m-2-key-b-4g-5g-modem-adapter-enclosure-with-sim-card-slot-new-style?aflt=3345
@@ -175,7 +175,7 @@ I've included affiliate links to items which are sold by The Wireless Haven as I
 Reasons for selection covered [here](https://github.com/hazarjast/5g_rpi4_build/blob/main/README.md#quectel-rm502q-ae). 
 
 ### NGFF to USB 3.0 Adapter
-Instead of a 5G modem evaluation board (EVB) this build will use a simpler adapter board. The disadvantage here is no direct DC power supplementation unless you go with the Wireless Haven single SIM version linked in the parts list. On the flipside, this item can be sourced domestically for less cost than a specialized EVB and we can supplement power input with a USB Y-cable to cover the power demands of the modem.
+Instead of a 5G modem evaluation board (EVB) this build will use a simpler adapter board. The disadvantage here is no direct DC power supplementation unless you go with the Wireless Haven single SIM version linked in the parts list. On the flipside, this item can be sourced domestically for less cost than a specialized EVB and we can supplement power input with a USB Y-cable to cover the power demands of the modem. NOTE: In later testing I found that neither this adapter nor the EVB used in the RPi 4 build had the proper SIM-presence pin wired for the RM502Q-AE to recognize the second SIM slot so unfortunately only the primary SIM slot is useable.
 
 ### Linksys EA8300
 Already covered selection [reasons for this component](https://github.com/hazarjast/5g_linksys_build/blob/main/README.md#design-philosophy--guiding-principles).
@@ -387,6 +387,11 @@ This is an interactive wrapper for the 'socat' utility which allows us to commun
 I noticed that sometimes after being connected to the cell for a long period of time (1 week+) the NSA aggregation abilities between the LTE control channel and NR channels seem to stop functioning. This was easily shown by a speedtest which failed to break the 100Mbps barrier when normally the properly functioning NSA connection would exceed this easily (200Mbps+ average). This script is called by cron once daily during off hours (5AM my local time). It calls the Ookla speedtest CLI app for armhf (you must download this separately and place under '/usr/bin/speedtest'), then disables the modem via mmcli if the download result is not greater than *$THRESHOLD* (set to 100Mbps by default). The daemonized modemwatcher.sh script then restarts the modem when finding it disabled. If the speedtest download result is not greater than *$THRESHOLD* then no action is taken. The following inputs should be entered appropriately prior to first run:
 
 **$THRESHOLD** - Threshold in Mbps; a result less than or equal to this will trigger disabling modem.
+
+#### failsafe.sh
+I noticed one edge case of connectivity failure that modemwatcher.sh was not catching. In the very rare case that the modem attaches to a cell and receives an IP but the backend carrier routing is broken the modem showed it was in 'connected' state in ModemManager but could not pass any traffic. Again, this is quite rare and a restart of the modem connected it to another cell while the other one was in this error state so apparently the carrier does steer new connections onto a cell that does have proper routing out to the internet. When I observed this issue I am thinking I may have just caught it when the backend connection to the problem cell was undergoing maintenance. In order to prevent manual intervention in these cases, I created this one additional script running as a service (under pservice) which performs a ping test once every five minutes and then disables the modem to be reset by modemwatcher.sh if it cannot reach google or cloudflare. The following inputs should be entered appropriately prior to first run:
+
+**$PINGDST, $LIFACE, $INTERVAL - Domains to ping, logical (uci) name of the modem interface, and interval.
 
 ### Switch Modem to Generic Image
 In initial testing I found that the RM502Q-AE had Quectel's auto-image-switching feature activated by default. This 'feature' switches its firmware image (MBN) based on the carrier SIM which is inserted. Thus, when I inserted my carrier SIM it promptly switched to using the commercial image for my carrier. While this first party image allowed me to obtain IP assignment which was very geo-local (lowest latency), I noticed a significant loss of ICMP and UDP packets. Thus, ping and connectivity to UDP (such as external DNS, WireGuard, etc.) was completely broken at worst or unreliable at best.
