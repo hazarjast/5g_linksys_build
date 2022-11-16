@@ -27,7 +27,6 @@
 # $ATDEVICE, $MMVID, $MMPID, $MMUBIND - Found in '/lib/udev/rules.d/77-mm-[vendor]-port-types.rules':
 # ex. '...ttyUSB2...AT primary port...ATTRS{idVendor}=="2c7c", ATTRS{idProduct}=="0800", ENV{.MM_USBIFNUM}=="02"...'
 # (ATDEVICE="/dev/ttyUSB2", MMVID="2c7c", MMPID="0800", MMUBIND="02")
-# For MBIM mode, $MMUBIND will be "03" instead of "02" since there is only one AT port provided.
 #
 # $LIMIT - Temperature threshold in degrees celsius when fans should be activated.
 #
@@ -44,15 +43,15 @@ PORTS="2-3"
 ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
-MMUBIND="03"
+MMUBIND="02"
 LIMIT=55
 INTERVAL=60
 PIDFILE=/var/run/fan_control.pid
 LOOPPID=/var/run/fan_control_loop.pid
 INFO="/usr/bin/logger -t FAN_CONTROL"
 ERROR="/usr/bin/logger -p err -t FAN_CONTROL"
-HPDIR=/etc/hotplug.d/usb
 FANON=/var/run/fan.on
+PSCONF=/etc/config/pservice
 
 # Preliminary logic to ensure this only runs one instance at a time
 [ -f $PIDFILE ] && PFEXST="true" || PFEXST="false"
@@ -68,7 +67,6 @@ esac
 
 # Unbind ModemManager from an AT port so we can use it
 # Without this 'socat' commands can hang or return no value
-# Also setup this script as a 'pservice' daemon if it's not already
 if [ ! -f "/lib/udev/rules.d/77-mm-test.rules" ]
 then
 cat << EOF >> /lib/udev/rules.d/77-mm-test.rules
@@ -82,10 +80,18 @@ ATTRS{idVendor}=="$MMVID", ATTRS{idProduct}=="$MMPID", ENV{.MM_USBIFNUM}=="$MMUB
 LABEL="mm_test_end"
 EOF
 
-  PSCONF=/etc/config/pservice
-  if ! $(grep -q 'fancontrol' $PSCONF)
-  then
-    [ -f /etc/config/pservice ] && cp -p $PSCONF $PSCONF.bak
+  $INFO "Unbound ModemManager from USBIFNUM $MMUBIND on modem $MMVID:$MMPID."
+  echo "ModemManager config changes were made. Please reboot OpenWRT to take effect."
+  $INFO "ModemManager config changes were made. Prompted user to reboot."
+  exit 0
+else
+  continue
+fi
+
+# Setup this script as a 'pservice' daemon if it's not already
+if ! $(grep -q 'fancontrol' $PSCONF)
+then
+  [ -f /etc/config/pservice ] && cp -p $PSCONF $PSCONF.bak
 cat << EOF >> $PSCONF
 
 config pservice
@@ -96,15 +102,9 @@ config pservice
         list args 'exec /scripts/fancontrol.sh'
 EOF
 
-    $INFO "Setup 'fancontrol' as a pservice daemon."
-  else
-    continue
-  fi
-
-  $INFO "Unbound ModemManager from USBIFNUM $MMUBIND on modem $MMVID:$MMPID."
-  echo "ModemManager and/or pservice config changes were made. Please reboot OpenWRT to take effect."
-  $INFO "ModemManager and/or pservice config changes were made. Prompted user to reboot."
-  exit 0
+  $INFO "Setup 'fancontrol' as a pservice daemon."
+  echo "pservice config changes were made. Please reboot OpenWRT to take effect."
+  $INFO "pservice config changes were made. Prompted user to reboot."
 else
   continue
 fi
@@ -119,6 +119,9 @@ terminate() {
 }
 
 trap terminate SIGHUP SIGINT SIGQUIT SIGTERM
+
+# Start with the fans turned off
+uhubctl -n $HUB -p $PORTS -a off >/dev/null 2>/dev/null
 
 $INFO "Fan controller initialized!"
 
