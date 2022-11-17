@@ -110,7 +110,8 @@ else
   continue
 fi
 
-[ $mmupd -eq 1 ] || [ $psupd -eq 1 ] && exit 0
+[ ! -z $mmupd ] && [ $mmupd -eq 1 ] && exit 0
+[ ! -z $psupd ] && [ $psupd -eq 1 ] && exit 0
 
 # Function to cleanup processes and pidfiles when script is terminated
 terminate() {
