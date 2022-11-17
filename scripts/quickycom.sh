@@ -64,6 +64,9 @@ else
   fi
 fi
 
+# Create symlink for easy calls going forward
+[ -f /usr/sbin/qcom ] || ln -s /scripts/quickycom.sh /usr/sbin/qcom
+
 # Unbind ModemManager from the secondary AT port so we can use it
 # Without this 'socat' commands can hang indefinitely
 # See: https://github.com/openwrt/packages/issues/14197
@@ -80,9 +83,6 @@ SUBSYSTEMS=="usb", ATTRS{bInterfaceNumber}=="?*", ENV{.MM_USBIFNUM}="\$attr{bInt
 ATTRS{idVendor}=="$MMVID", ATTRS{idProduct}=="$MMPID", ENV{.MM_USBIFNUM}=="$MMUBIND", ENV{ID_MM_PORT_IGNORE}="1"
 LABEL="mm_test_end"
 EOF
-
-  # Create symlink for easy calls going forward
-  [ -f /usr/sbin/qcom ] || ln -s /scripts/quickycom.sh /usr/sbin/qcom
 
   $INFO "Unbound ModemManager from USBIFNUM $MMUBIND on modem $MMVID:$MMPID."
   $INFO "ModemManager config changes were made. Prompted user to reboot."
