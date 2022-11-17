@@ -83,7 +83,7 @@ EOF
   $INFO "Unbound ModemManager from USBIFNUM $MMUBIND on modem $MMVID:$MMPID."
   echo "ModemManager config changes were made. Please reboot OpenWRT to take effect."
   $INFO "ModemManager config changes were made. Prompted user to reboot."
-  exit 0
+  mmupd=1
 else
   continue
 fi
@@ -105,9 +105,12 @@ EOF
   $INFO "Setup 'fancontrol' as a pservice daemon."
   echo "pservice config changes were made. Please reboot OpenWRT to take effect."
   $INFO "pservice config changes were made. Prompted user to reboot."
+  psupd=1
 else
   continue
 fi
+
+[ $mmupd -eq 1 ] || [ $psupd -eq 1 ] && exit 0
 
 # Function to cleanup processes and pidfiles when script is terminated
 terminate() {
