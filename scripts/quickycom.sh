@@ -40,7 +40,7 @@ TIMEOUT=5
 ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
-MMUBIND="03"
+MMUBIND="02"
 
 # Preliminary logic to ensure this only runs one instance at a time
 if [ -f $PIDFILE ]
