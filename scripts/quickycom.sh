@@ -40,7 +40,7 @@ TIMEOUT=5
 ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
-MMUBIND="02"
+MMUBIND="03"
 CYCLING="/var/run/modem.cycling"
 ATLOCK="/var/run/at.lock"
 
