@@ -52,6 +52,8 @@ INFO="/usr/bin/logger -t FAN_CONTROL"
 ERROR="/usr/bin/logger -p err -t FAN_CONTROL"
 FANON=/var/run/fan.on
 PSCONF=/etc/config/pservice
+CYCLING="/var/run/modem.cycling"
+ATLOCK="/var/run/at.lock"
 
 # Preliminary logic to ensure this only runs one instance at a time
 [ -f $PIDFILE ] && PFEXST="true" || PFEXST="false"
@@ -137,7 +139,9 @@ do
  # Deactivate AT echo if it is enabled. If we don't, commands can get stuck in an echo loop.
   $(ls -al $ATDEVICE |grep -q 'crw') && ATE0=$(timeout -k 5 5 echo -e ATE0 | socat - $ATDEVICE,crnl | xargs)
 
-  [ $ATE0 = "OK" ] && TEMP=$(timeout -k 5 5 echo -e AT+QTEMP | socat - $ATDEVICE,crnl | grep cpu0-a7-usr | egrep -wo "[0-9][0-9]")
+  [ ! -f $ATLOCK ] && [ ! -f $CYCLING ] && [ ! -z $ATE0 ] && [ $ATE0 = "OK" ] && \
+  TEMP=$(timeout -k 5 5 echo -e AT+QTEMP | socat - $ATDEVICE,crnl | grep cpu0-a7-usr | egrep -wo "[0-9][0-9]")
+
   if $(echo $TEMP | egrep -qwo "[0-9][0-9]")
   then
     [ -f $FANON ] && STATE="on" || STATE="off" # Check current fan state
