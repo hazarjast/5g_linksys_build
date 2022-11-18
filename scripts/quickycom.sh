@@ -41,6 +41,8 @@ ATDEVICE=/dev/ttyUSB2
 MMVID="2c7c"
 MMPID="0800"
 MMUBIND="02"
+CYCLING="/var/run/modem.cycling"
+ATLOCK="/var/run/at.lock"
 
 # Preliminary logic to ensure this only runs one instance at a time
 if [ -f $PIDFILE ]
@@ -102,11 +104,14 @@ else
   $(ls -al $ATDEVICE |grep -q 'crw') && ATE0=$(timeout -k 5 5 echo -e ATE0 | socat - $ATDEVICE,crnl | xargs)
 
   # Validate AT echo was successfully deactivated, then send our command.
-  [ "$ATE0" = "OK" ] && timeout -k $TIMEOUT $TIMEOUT echo -e $CMD | socat - $ATDEVICE,crnl || \
+  [ ! -f $CYCLING ] && [ ! -z $ATE0 ] && [ "$ATE0" = "OK" ] && touch $ATLOCK && \
+  timeout -k $TIMEOUT $TIMEOUT echo -e $CMD | socat - $ATDEVICE,crnl || \
 
   # Return error if AT echo was not confirmed to be deactivated.
   echo "$ATDEVICE appears to be busy. Try again later."
 fi
+
+[ -f $ATLOCK ] && rm $ATLOCK
 
 # Houskeeping for pidfile
 rm $PIDFILE
